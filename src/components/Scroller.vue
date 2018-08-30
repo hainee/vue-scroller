@@ -1,21 +1,18 @@
 <template>
   <div class="_v-container" :id="containerId"
-    @touchstart="touchStart($event)"
-    @touchmove="touchMove($event)"
-    @touchend="touchEnd($event)"
-    @mousedown="mouseDown($event)"
-    @mousemove="mouseMove($event)"
-    @mouseup="mouseUp($event)"
-  >
+       @touchstart="touchStart($event)"
+       @touchmove="touchMove($event)"
+       @touchend="touchEnd($event)"
+       @mousedown="mouseDown($event)"
+       @mousemove="mouseMove($event)"
+       @mouseup="mouseUp($event)"
+       @wheel="mouseWheel($event)">
     <div class="_v-content" :id="contentId">
       <div v-if="onRefresh" class="pull-to-refresh-layer"
-        :class="{'active': state == 1, 'active refreshing': state == 2}"
-      >
+           :class="{'active': state == 1, 'active refreshing': state == 2}">
         <span class="spinner-holder">
           <arrow class="arrow" :fillColor="refreshLayerColor" v-if="state != 2"></arrow>
-
           <span class="text" v-if="state != 2" :style="{color: refreshLayerColor}" v-text="refreshText"></span>
-
           <span v-if="state == 2">
             <slot name="refresh-spinner">
               <spinner :style="{fill: refreshLayerColor, stroke: refreshLayerColor}"></spinner>
@@ -23,36 +20,30 @@
           </span>
         </span>
       </div>
-
       <slot></slot>
-
       <div v-if="showInfiniteLayer" class="loading-layer">
         <span class="spinner-holder" :class="{'active': showLoading}">
           <slot name="infinite-spinner">
             <spinner :style="{fill: loadingLayerColor, stroke: loadingLayerColor}"></spinner>
           </slot>
         </span>
-
         <div class="no-data-text"
-          :class="{'active': !showLoading && loadingState == 2}" :style="{color: loadingLayerColor}" 
-          v-text="noDataText">
+             :class="{'active': !showLoading && loadingState == 2}" :style="{color: loadingLayerColor}"
+             v-text="noDataText">
         </div>
       </div>
     </div>
   </div>
 </template>
 <style lang="css" scoped>
-
   ._v-container {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0;
     left: 0;
     overflow: hidden;
-
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -60,105 +51,99 @@
     user-select: none;
   }
 
-  ._v-container > ._v-content {
-    width: 100%;
+    ._v-container > ._v-content {
+      width: 100%;
+      -webkit-transform-origin: left top;
+      -webkit-transform: translateZ(0);
+      -moz-transform-origin: left top;
+      -moz-transform: translateZ(0);
+      -ms-transform-origin: left top;
+      -ms-transform: translateZ(0);
+      -o-transform-origin: left top;
+      -o-transform: translateZ(0);
+      transform-origin: left top;
+      transform: translateZ(0);
+    }
 
-    -webkit-transform-origin: left top;
-    -webkit-transform: translateZ(0);
-    -moz-transform-origin: left top;
-    -moz-transform: translateZ(0);
-    -ms-transform-origin: left top;
-    -ms-transform: translateZ(0);
-    -o-transform-origin: left top;
-    -o-transform: translateZ(0);
-    transform-origin: left top;
-    transform: translateZ(0);
-  }
+      ._v-container > ._v-content > .pull-to-refresh-layer {
+        width: 100%;
+        height: 60px;
+        margin-top: -60px;
+        text-align: center;
+        font-size: 16px;
+        color: #AAA;
+      }
 
-  ._v-container > ._v-content > .pull-to-refresh-layer {
-    width: 100%;
-    height: 60px;
-    margin-top: -60px;
-    text-align: center;
-    font-size: 16px;
-    color: #AAA;
-  }
+      ._v-container > ._v-content > .loading-layer {
+        width: 100%;
+        height: 60px;
+        text-align: center;
+        font-size: 16px;
+        line-height: 60px;
+        color: #AAA;
+        position: relative;
+      }
 
-  ._v-container > ._v-content > .loading-layer {
-    width: 100%;
-    height: 60px;
-    text-align: center;
-    font-size: 16px;
-    line-height: 60px;
-    color: #AAA;
-    position: relative;
-  }
+        ._v-container > ._v-content > .loading-layer > .no-data-text {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+        }
 
-  ._v-container > ._v-content > .loading-layer > .no-data-text
-  {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-  }
+        ._v-container > ._v-content > .loading-layer > .spinner-holder,
+        ._v-container > ._v-content > .loading-layer > .no-data-text {
+          opacity: 0;
+          transition: opacity .15s linear;
+          -webkit-transition: opacity .15s linear;
+        }
 
-  ._v-container > ._v-content > .loading-layer > .spinner-holder,
-  ._v-container > ._v-content > .loading-layer > .no-data-text
-  {
-    opacity: 0;
-    transition: opacity .15s linear;
-    -webkit-transition: opacity .15s linear;
-  }
+          ._v-container > ._v-content > .loading-layer > .spinner-holder.active,
+          ._v-container > ._v-content > .loading-layer > .no-data-text.active {
+            opacity: 1;
+          }
 
-  ._v-container > ._v-content > .loading-layer > .spinner-holder.active,
-  ._v-container > ._v-content > .loading-layer > .no-data-text.active
-  {
-    opacity: 1;
-  }
+        ._v-container > ._v-content > .pull-to-refresh-layer .spinner-holder,
+        ._v-container > ._v-content > .loading-layer .spinner-holder {
+          text-align: center;
+          -webkit-font-smoothing: antialiased;
+        }
 
-  ._v-container > ._v-content > .pull-to-refresh-layer .spinner-holder,
-  ._v-container > ._v-content > .loading-layer .spinner-holder {
-    text-align: center;
-    -webkit-font-smoothing: antialiased;
-  }
+          ._v-container > ._v-content > .pull-to-refresh-layer .spinner-holder .arrow,
+          ._v-container > ._v-content > .loading-layer .spinner-holder .arrow {
+            width: 20px;
+            height: 20px;
+            margin: 8px auto 0 auto;
+            -webkit-transform: translate3d(0,0,0) rotate(0deg);
+            transform: translate3d(0,0,0) rotate(0deg);
+            -webkit-transition: -webkit-transform .2s linear;
+            transition: transform .2s linear;
+          }
 
-  ._v-container > ._v-content > .pull-to-refresh-layer .spinner-holder .arrow,
-  ._v-container > ._v-content > .loading-layer .spinner-holder .arrow {
-    width: 20px;
-    height: 20px;
-    margin: 8px auto 0 auto;
+          ._v-container > ._v-content > .pull-to-refresh-layer .spinner-holder .text,
+          ._v-container > ._v-content > .loading-layer .spinner-holder .text {
+            display: block;
+            margin: 0 auto;
+            font-size: 14px;
+            line-height: 20px;
+            color: #aaa;
+          }
 
-    -webkit-transform: translate3d(0,0,0) rotate(0deg);
-    transform: translate3d(0,0,0) rotate(0deg);
+          ._v-container > ._v-content > .pull-to-refresh-layer .spinner-holder .spinner,
+          ._v-container > ._v-content > .loading-layer .spinner-holder .spinner {
+            margin-top: 14px;
+            width: 32px;
+            height: 32px;
+            fill: #444;
+            stroke: #69717d;
+          }
 
-    -webkit-transition: -webkit-transform .2s linear;
-    transition: transform .2s linear;
-  }
-
-  ._v-container > ._v-content > .pull-to-refresh-layer .spinner-holder .text,
-  ._v-container > ._v-content > .loading-layer .spinner-holder .text {
-    display: block;
-    margin: 0 auto;
-    font-size: 14px;
-    line-height: 20px;
-    color: #aaa;
-  }
-
-  ._v-container > ._v-content > .pull-to-refresh-layer .spinner-holder .spinner,
-  ._v-container > ._v-content > .loading-layer .spinner-holder .spinner {
-    margin-top: 14px;
-    width: 32px;
-    height: 32px;
-    fill: #444;
-    stroke: #69717d;
-  }
-
-  ._v-container > ._v-content > .pull-to-refresh-layer.active .spinner-holder .arrow {
-    -webkit-transform: translate3d(0,0,0) rotate(180deg);
-    transform: translate3d(0,0,0) rotate(180deg);
-  }
+      ._v-container > ._v-content > .pull-to-refresh-layer.active .spinner-holder .arrow {
+        -webkit-transform: translate3d(0,0,0) rotate(180deg);
+        transform: translate3d(0,0,0) rotate(180deg);
+      }
 </style>
 <script>
   import Scroller from '../module/core'
@@ -254,6 +239,11 @@
       minContentHeight: {
         type: Number,
         default: 0 // px
+      },
+
+      mouseWheelDelta: {
+        type: Number,
+        default: 100
       }
     },
 
@@ -266,8 +256,8 @@
         return widthAndHeightCoerce(this.height)
       },
 
-      showInfiniteLayer () {
-        let contentHeight = 0 
+      showInfiniteLayer() {
+        let contentHeight = 0
         this.content
           ? contentHeight = this.content.offsetHeight
           : void 666
@@ -297,7 +287,7 @@
       }
     },
 
-    mounted () {
+    mounted() {
       this.container = document.getElementById(this.containerId)
       this.container.style.width = this.w
       this.container.style.height = this.h
@@ -343,10 +333,10 @@
       // enable infinite loading
       if (this.onInfinite) {
         this.infiniteTimer = setInterval(() => {
-          let {left, top, zoom} = this.scroller.getValues()
+          let { left, top, zoom } = this.scroller.getValues()
 
-          // 在 keep alive 中 deactivated 的组件长宽变为 0 
-          if (this.content.offsetHeight > 0 && 
+          // 在 keep alive 中 deactivated 的组件长宽变为 0
+          if (this.content.offsetHeight > 0 &&
             top + 60 > this.content.offsetHeight - this.container.clientHeight) {
             if (this.loadingState) return
             this.loadingState = 1
@@ -375,9 +365,9 @@
       }
 
       let { content_width, content_height } = contentSize()
-      
+
       this.resizeTimer = setInterval(() => {
-        let {width, height} = contentSize()
+        let { width, height } = contentSize()
         if (width !== content_width || height !== content_height) {
           content_width = width
           content_height = height
@@ -386,7 +376,7 @@
       }, 10);
     },
 
-    destroyed () {
+    destroyed() {
       clearInterval(this.resizeTimer);
       if (this.infiniteTimer) clearInterval(this.infiniteTimer);
     },
@@ -471,6 +461,17 @@
         this.mousedown = false
       },
 
+      mouseWheel(e) {
+        if (e && e.deltaY !== 0) {
+          if (e.deltaY > 0) {
+            this.scrollBy(0, this.mouseWheelDelta, true)
+          } else {
+            this.scrollBy(0, 0 - this.mouseWheelDelta, true)
+
+          }
+        }
+      },
+
       // 获取位置
       getPosition() {
         let v = this.scroller.getValues()
@@ -482,7 +483,7 @@
       },
 
       resetLoadingState() {
-        let {left, top, zoom} = this.scroller.getValues()
+        let { left, top, zoom } = this.scroller.getValues()
         let container = this.container;
         let content = this.content;
 
